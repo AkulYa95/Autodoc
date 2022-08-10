@@ -11,3 +11,8 @@ class ImageStore {
     static let imageCache = NSCache < NSString, NSData>()
 }
 
+struct SegueIdentifier {
+    static let detail = "Detail"
+    static let collection = "Collection"
+}
+

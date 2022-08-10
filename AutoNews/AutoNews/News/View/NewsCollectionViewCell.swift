@@ -10,7 +10,7 @@ import Combine
 
 class NewsCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet private weak var newsImage: UIImageView!
+    @IBOutlet private weak var newsImageView: UIImageView!
     @IBOutlet private weak var loader: UIActivityIndicatorView!
     @IBOutlet private weak var newsTitle: UILabel!
     
@@ -22,19 +22,6 @@ class NewsCollectionViewCell: UICollectionViewCell {
     
     private var cancelable: Set<AnyCancellable> = []
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        configureContentView()
-    }
-    
-    init() {
-        super.init(frame: .zero)
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
     private func binding() {
         guard let viewModel = viewModel else { return }
         
@@ -43,10 +30,11 @@ class NewsCollectionViewCell: UICollectionViewCell {
             .assign(to: \.text, on: newsTitle)
             .store(in: &cancelable)
         
-         viewModel.imageData
+        viewModel.imageData
             .sink(receiveValue: { data in
                 guard let data = data as Data? else { return }
-                self.newsImage.image = UIImage(data: data)
+                
+                self.newsImageView.image = UIImage(data: data)
                 print("loaded image N\(viewModel.row)")
             })
             .store(in: &cancelable)
@@ -63,19 +51,28 @@ class NewsCollectionViewCell: UICollectionViewCell {
             .store(in: &cancelable)
     }
     
+    private func resizeImageWithAspect(image: UIImage,
+                                       scaledToMaxWidth width: CGFloat,
+                                       maxHeight height: CGFloat) -> UIImage? {
+        let oldWidth = image.size.width;
+        let oldHeight = image.size.height;
+        
+        let scaleFactor = (oldWidth > oldHeight) ? width / oldWidth : height / oldHeight;
+        
+        let newHeight = oldHeight * scaleFactor;
+        let newWidth = oldWidth * scaleFactor;
+        let newSize = CGSize(width: newWidth, height: newHeight)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize,false,UIScreen.main.scale);
+        
+        image.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height));
+        let newImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        return newImage
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
-        newsImage.image = nil
-    }
-    
-    private func configureContentView() {
-        contentView.backgroundColor = .white
-        contentView.layer.cornerRadius = 10
-        newsImage.layer.cornerRadius = 10
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+        newsImageView.image = nil
     }
 }

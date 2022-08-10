@@ -27,15 +27,6 @@ struct NewsItem: Identifiable, Codable {
     let categoryType: CategoryType?
     var imageData: Data?
     
-//    static let placeholder = NewsElement(id: nil,
-//                                  title: nil,
-//                                  description: nil,
-//                                  publishedDate: nil,
-//                                  url: nil,
-//                                  fullURL: nil,
-//                                  titleImageURl: nil,
-//                                  categoryType: nil)
-    
     enum CodingKeys: String, CodingKey {
         case id
         case title

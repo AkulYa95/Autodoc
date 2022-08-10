@@ -13,7 +13,7 @@ protocol NewsCollectionViewCellViewModelProtocol {
     var imageData: Published <Data?>.Publisher { get }
     var isLoading: Published <Bool>.Publisher { get }
     var row: Int { get }
-
+    
 }
 
 class NewsCollectionViewCellViewModel {
@@ -26,24 +26,23 @@ class NewsCollectionViewCellViewModel {
         }
     }
     @Published private var isLoadingImage: Bool = true
-
     
     private var cancelable: AnyCancellable?
     private var index: Int
     
     private func getImageData() {
-         isLoadingImage = true
-        guard let strinfgUrl = autoNewsItem.titleImageURl,
-              let url = URL(string: strinfgUrl) else {
+        isLoadingImage = true
+        guard let stringUrl = autoNewsItem.titleImageURl,
+              let url = URL(string: stringUrl) else {
                   return
               }
-            Task {
-                guard let data = try? await ApiManager.shared.fetchImage(withURL: url) else { return }
-                DispatchQueue.main.async {
-                    self.autoNewsImageData = data
-                    self.isLoadingImage = false
-                }
+        Task {
+            guard let data = try? await ApiManager.shared.fetchImage(withURL: url) else { return }
+            DispatchQueue.main.async {
+                self.autoNewsImageData = data
+                self.isLoadingImage = false
             }
+        }
         
     }
     
@@ -64,7 +63,6 @@ extension NewsCollectionViewCellViewModel: NewsCollectionViewCellViewModelProtoc
         index
     }
     
-    
     var isLoading: Published<Bool>.Publisher {
         $isLoadingImage
     }
@@ -77,6 +75,4 @@ extension NewsCollectionViewCellViewModel: NewsCollectionViewCellViewModelProtoc
     var newsItem: Published<NewsItem>.Publisher {
         $autoNewsItem
     }
-    
-    
 }
